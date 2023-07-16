@@ -9,3 +9,8 @@
 /WeatherMap-api/bin/Debug/net6.0
 /WeatherMap-api/obj
 /.vs
+/Core/bin/Debug/net6.0
+/Core/obj
+/Infrastructure/bin/Debug/net6.0
+/Infrastructure/obj/Debug/net6.0
+/Infrastructure/obj
