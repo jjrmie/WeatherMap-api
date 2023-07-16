@@ -1,0 +1,10 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/WeatherMap-api/FileContentIndex
+/.vs/WeatherMap-api/config
+/.vs/WeatherMap-api/DesignTimeBuild
+/.vs/WeatherMap-api/v17
+/WeatherMap-api/bin/Debug/net6.0
+/WeatherMap-api/obj
