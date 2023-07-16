@@ -1,5 +1,8 @@
 using API.Middlewares;
 using AspNetCoreRateLimit;
+using Core.Interfaces;
+using Infrastructure.Data;
+using Infrastructure.Helper;
 using WeatherMap_api.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +13,8 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<IWeatherRepository, WeatherRepository>();
+builder.Services.AddScoped<IApiClient, ApiClient>();
 //RateLimit
 builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
