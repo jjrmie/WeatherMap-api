@@ -24,7 +24,7 @@ namespace WeatherMap_api.Middlewares
        (HttpContext httpContext, RateLimitRule rule, string retryAfter)
         {
             string? path = httpContext?.Request?.Path.Value;
-            var result = JsonSerializer.Serialize("API rate limit quota exceeded");
+            //var result = JsonSerializer.Serialize("API rate limit quota exceeded");
             httpContext.Response.Headers["Retry-After"] = retryAfter;
             httpContext.Response.StatusCode = 429;
             httpContext.Response.ContentType = "application/json";
@@ -33,7 +33,7 @@ namespace WeatherMap_api.Middlewares
 
             _logger.Warn(string.Format("{0} API rate limit quota exceeded {1}", 429, httpContext.Request.Path));
 
-            return httpContext.Response.WriteAsync(result);
+            return httpContext.Response.WriteAsync("API hourly rate limit quota exceeded");
 
         }
         private void WriteQuotaExceededResponseMetadata

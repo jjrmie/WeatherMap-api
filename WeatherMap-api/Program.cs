@@ -33,8 +33,8 @@ builder.Services.Configure<ClientRateLimitOptions>(options =>
             new RateLimitRule
             {
                 Endpoint = "*",
-                Period = "10s",
-                Limit = 2
+                Period = "3600s",
+                Limit = 5
             }
 
         };
