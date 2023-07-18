@@ -1,6 +1,12 @@
 ﻿using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using Microsoft.AspNetCore.Http;
 using NLog;
 using System.Net;
+using Core.Models;
+using NLog.Fluent;
+using System.Text;
+using System.IO;
+using System;
 
 namespace API.Middlewares
 {
@@ -26,8 +32,25 @@ namespace API.Middlewares
                 return;
             }
 
-            var apiKey = _config[_apiKey];
-            if (!apiKey.Equals(extractedApiKey))
+            var apiKeyArray = _config.GetSection("ApiKey").Get<string[]>().ToList();
+
+            string attemptsFile = @"helper/attempts.txt";
+
+            string apiKeysFile = @"helper/apiKeys.txt";
+
+            //log attempts
+            using (StreamWriter sw = File.AppendText(attemptsFile))
+            {
+                sw.WriteLine(extractedApiKey);
+            }
+
+            //log all api keys
+            using (StreamWriter sw = File.AppendText(apiKeysFile))
+            {
+                sw.WriteLine(DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") + " - " + extractedApiKey);
+            }
+
+            if (!apiKeyArray.Contains(extractedApiKey))
             {
                 context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                 _logger.Warn(string.Format("{0} Unauthorized - Incorrect Api Key was provided {1}", (int)HttpStatusCode.Unauthorized, context.Request.Path));

@@ -3,15 +3,27 @@ using AspNetCoreRateLimit;
 using Core.Interfaces;
 using Infrastructure.Data;
 using Infrastructure.Helper;
+using System.Collections.Generic;
 using WeatherMap_api.Middlewares;
+using Core.Models;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var RateLimitCount = builder.Configuration.GetValue<int>("RateLimitCount");
 // Add services to the container.
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options => 
+{ 
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.IsEssential = true;
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.HttpOnly = true;
+});
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IWeatherRepository, WeatherRepository>();
 builder.Services.AddScoped<IApiClient, ApiClient>();
@@ -22,6 +34,7 @@ builder.Services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounte
 builder.Services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
 builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
 builder.Services.AddInMemoryRateLimiting();
+builder.Configuration.AddJsonFile("appsettings.json", false);
 builder.Services.Configure<ClientRateLimitOptions>(options =>
 {
     options.EnableEndpointRateLimiting = true;
@@ -34,9 +47,8 @@ builder.Services.Configure<ClientRateLimitOptions>(options =>
             {
                 Endpoint = "*",
                 Period = "3600s",
-                Limit = 5
+                Limit = RateLimitCount
             }
-
         };
 });
 
@@ -48,6 +60,7 @@ builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
 
 var app = builder.Build();
 
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -58,14 +71,17 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseRouting();
+app.UseSession();
 app.UseCors("corsapp");
 app.UseAuthorization();
-
+app.UseMiddleware<ApiKeyMiddleware>();
 //Rate Limit
 app.UseIpRateLimiting();
 app.UseMiddleware<RateLimitMiddleware>();
 
-app.UseMiddleware<ApiKeyMiddleware>();
+
 app.MapControllers();
+
+
 
 app.Run();
