@@ -48,3 +48,4 @@ We may be able to refactor this feature by having more R&D on rate-limit-by-key 
  - Modify the ApiKey.key1 in the environment.ts, select a country and a city while the api is running to test the Api Key authentication
  - Constantly monitoring ../WeatherMap-api/Helper/apiKeys.txt and ../WeatherMap-api/Helper/attempts.txt to learn more the behaviours of the api
  - Constantly monitoring ../bin/Debug/net6.0/logs/WeatherMap-yyyy-MM-dd.log to learn more the exceptions thrown by the api
+ - **Remember to close those files opened for inspection/ monitoring before further testing or you would get IOException thrown**
